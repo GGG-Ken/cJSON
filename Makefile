@@ -15,7 +15,8 @@ UTILS_SOVERSION = 1
 CJSON_SO_LDFLAG=-Wl,-soname=$(CJSON_LIBNAME).so.$(CJSON_SOVERSION)
 UTILS_SO_LDFLAG=-Wl,-soname=$(UTILS_LIBNAME).so.$(UTILS_SOVERSION)
 
-PREFIX ?= /usr/local
+PREFIX ?= $(PWD)/ken_result
+# PREFIX ?= /usr/local
 INCLUDE_PATH ?= include/cjson
 LIBRARY_PATH ?= lib
 
@@ -23,8 +24,12 @@ INSTALL_INCLUDE_PATH = $(DESTDIR)$(PREFIX)/$(INCLUDE_PATH)
 INSTALL_LIBRARY_PATH = $(DESTDIR)$(PREFIX)/$(LIBRARY_PATH)
 
 INSTALL ?= cp -a
-
-CC = gcc -std=c89
+#arm64
+# CROSS_COMPILE:=/home/quan/share/zc0203_skdl0401p/tools/gcc-10.2.1-20210303-sigmastar-glibc-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+#arm32
+CROSS_COMPILE:=/home/quan/share/sktc0405/tools/gcc-11.1.0-20210608-sigmastar-glibc-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+CC = $(CROSS_COMPILE)gcc
+# CC = gcc -std=c89
 
 # validate gcc version for use fstack-protector-strong
 MIN_GCC_VERSION = "4.9"
