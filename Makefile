@@ -14,22 +14,44 @@ UTILS_SOVERSION = 1
 
 CJSON_SO_LDFLAG=-Wl,-soname=$(CJSON_LIBNAME).so.$(CJSON_SOVERSION)
 UTILS_SO_LDFLAG=-Wl,-soname=$(UTILS_LIBNAME).so.$(UTILS_SOVERSION)
+# 1. 基础配置：默认架构（可手动指定 ARCH=arm64 切换）
+#    使用方法：make ARCH=arm32  # 编译arm32
+#             make ARCH=arm64  # 编译arm64
+ARCH ?= arm32  # 默认编译arm32，可覆盖
 
 PREFIX ?= $(PWD)/ken_result
 # PREFIX ?= /usr/local
 INCLUDE_PATH ?= include/cjson
 LIBRARY_PATH ?= lib
 
-INSTALL_INCLUDE_PATH = $(DESTDIR)$(PREFIX)/$(INCLUDE_PATH)
-INSTALL_LIBRARY_PATH = $(DESTDIR)$(PREFIX)/$(LIBRARY_PATH)
+# INSTALL_INCLUDE_PATH = $(DESTDIR)$(PREFIX)/$(INCLUDE_PATH)
+# INSTALL_LIBRARY_PATH = $(DESTDIR)$(PREFIX)/$(LIBRARY_PATH)
+
+INSTALL_INCLUDE_PATH = $(DESTDIR)$(PREFIX)/$(ARCH)/$(INCLUDE_PATH)
+INSTALL_LIBRARY_PATH = $(DESTDIR)$(PREFIX)/$(ARCH)/$(LIBRARY_PATH)
 
 INSTALL ?= cp -a
+
 #arm64
 # CROSS_COMPILE:=/home/quan/share/zc0203_skdl0401p/tools/gcc-10.2.1-20210303-sigmastar-glibc-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
 #arm32
-CROSS_COMPILE:=/home/quan/share/sktc0405/tools/gcc-11.1.0-20210608-sigmastar-glibc-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
-CC = $(CROSS_COMPILE)gcc
+# CROSS_COMPILE:=/home/quan/share/sktc0405/tools/gcc-11.1.0-20210608-sigmastar-glibc-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+# CC = $(CROSS_COMPILE)gcc
 # CC = gcc -std=c89
+
+ifeq ($(ARCH),arm32)
+    # arm32 工具链路径（你的原arm32配置）
+    CROSS_COMPILE := /home/quan/share/sktc0405/tools/gcc-11.1.0-20210608-sigmastar-glibc-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+else ifeq ($(ARCH),arm64)
+    # arm64 工具链路径（你的原arm64配置）
+    CROSS_COMPILE := /home/quan/share/skdl0402p/tools/gcc-10.2.1-20210303-sigmastar-glibc-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+else
+    # 错误处理：若指定未知架构，编译报错
+    $(error "Unsupported ARCH: $(ARCH)! Use 'ARCH=arm32' or 'ARCH=arm64'")
+endif
+CC = $(CROSS_COMPILE)gcc
+
+
 
 # validate gcc version for use fstack-protector-strong
 MIN_GCC_VERSION = "4.9"
